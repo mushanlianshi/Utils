@@ -1,0 +1,48 @@
+1.普通的上啦下拉刷新的使用
+_tableView.mj_header=[MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(TriggePull)];
+_tableView.mj_footer=[MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(TriggePull)];
+
+
+2.自定义刷新图片的使用
+MJRefreshGifHeader *header=[MJRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(TriggePull)];
+NSMutableArray *array=[[NSMutableArray alloc] init];
+for(int i=1;i<8;i++){
+UIImage *image=[UIImage imageNamed:@"form-del-sel.png"];
+[array addObject:image];
+}
+[header setImages:array forState:MJRefreshStateRefreshing];
+//    [header setImages:array forState:MJRefreshStatePulling];
+//    [header setImages:array forState:MJRefreshStateIdle];
+_tableView.mj_header=header;
+
+
+
+
+
+-(void)TriggePull{
+NSString *path=[NSString stringWithFormat:@"http://api.map.baidu.com/telematics/v3/weather?location=%@&output=json&ak=OnMGDYzjfKFPzurnK9o4ui2a",@"上海"];
+NSString *p=[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+NSURL *URL = [NSURL URLWithString:p];
+//    NSURL *url=[NSURL URLWithString:@"http://pic44.nipic.com/20140721/11624852_001107119409_2.jpg"];
+NSMutableDictionary *params=[[NSMutableDictionary alloc] init];
+[params setObject:@"list" forKey:@"list"];
+AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+[manager GET:p parameters:nil progress:^(NSProgress *downLoadProgress){
+NSLog(@"1111downLoadProgress is %@ ",downLoadProgress);
+} success:^(NSURLSessionDataTask *task,id responseObject){
+NSLog(@"11sucess  is %@ ",task);
+NSLog(@"11responseObject  is %@ ",responseObject);
+if([_tableView.mj_header isRefreshing]){
+[_tableView.mj_header endRefreshing];
+}
+if([_tableView.mj_footer isRefreshing]){
+[_tableView.mj_footer endRefreshing];
+}
+
+} failure:^(NSURLSessionDataTask *task,NSError *failure){
+NSLog(@"11failure  is %@ ",task);
+NSLog(@"11failure  is %@ ",failure);
+}];
+});
+}

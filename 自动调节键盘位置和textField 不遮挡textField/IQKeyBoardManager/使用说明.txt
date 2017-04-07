@@ -1,0 +1,31 @@
+//简书介绍使用地址 http://www.jianshu.com/p/9d7d246bd350/comments/1518291
+1.导入IQKeyboardManager后（即拖动这个文件到项目中），默认所有的页面都有了这个功能，如果你在哪一个界面不想有这个效果可以在当前界面控制器的生命周期方法中进行设置：
+
+#import <IQKeyboardManager.h>
+- (void)viewWillAppear:(BOOL)animated{
+
+[super viewWillAppear:animated];
+
+[IQKeyboardManager sharedManager].enable = NO;//设置之后这个界面不使用
+
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+
+[super viewWillDisappear:animated];
+
+[IQKeyboardManager sharedManager].enable = YES;//在页面消失之前在设置回来  不然别的界面默认设置也是不适用   单例模式
+
+}
+或者在 AppDelegate中注册方法：
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+[[IQKeyboardManager sharedManager] disableInViewControllerClass:[ViewController class]];
+
+return YES;
+}
+
+2.键盘上的工具条显示的 可以设置不显示
+你也可以不使用这个自动工具条，设置的代码如下：
+[IQKeyboardManager sharedManager].enableAutoToolbar = NO;
